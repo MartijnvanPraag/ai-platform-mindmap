@@ -1,12 +1,12 @@
 # Microsoft AI Agent Ecosystem Mindmap
 
 Open the interactive mindmap here:
-- `microsoft_ai_agents_mindmap.html`
+- `index.html`
 
 ## How to view
 
 ### Option A: Open directly
-Double-click `microsoft_ai_agents_mindmap.html` to open it in your default browser.
+Double-click `index.html` to open it in your default browser.
 
 ### Option B: Run a local web server (recommended if your browser blocks local scripts)
 From this folder:
@@ -17,7 +17,7 @@ python -m http.server 8000
 ```
 
 Then open:
-- http://localhost:8000/microsoft_ai_agents_mindmap.html
+- http://localhost:8000/index.html
 
 ## Controls
 - Click a node to fold/unfold.
