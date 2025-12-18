@@ -104,6 +104,12 @@ const markdown = `
   - Semantic Kernel agent patterns
     - [Semantic Kernel agent architecture](https://learn.microsoft.com/en-us/semantic-kernel/frameworks/agent/agent-architecture)
 
+### 1.3 Validate & test (before rollout)
+- Functional testing of tools/workflows (happy path + failure modes)
+- Safety/quality testing (prompt edge cases, hallucination checks, policy adherence)
+- Privacy/security and compliance readiness (RAI, data handling, approvals as needed)
+- Promote through staged environments (dev → test → prod) when applicable
+
 ## 2. Provision Identity (Who the agent is)
 
 ### 2.1 Microsoft Entra Agent ID (core identity model)
@@ -196,6 +202,28 @@ const markdown = `
 - Agent 365 tooling helps configure and register tool manifests
   - [Agent 365 developer tooling (MCP)](https://learn.microsoft.com/en-us/microsoft-agent-365/developer/tooling)
 
+### 4.3 Release & rollout (pilot → full)
+- Pilot/Beta release (limited audience, extra monitoring, fast iteration)
+- Full release (broader audience, hardened runbooks, steady-state governance)
+- Deployment checklist (typical)
+  - DLP / data access validation
+  - Identity & least-privilege permissions confirmed
+  - Monitoring/alerting wired up
+  - Change/approval gates as required
+  - [Integrate, manage, and operate AI agents](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ai-agents/integrate-manage-operate)
+
+### 4.4 Embed in workflow / UI (make it useful)
+- Add the agent where work happens (Teams channel, web app, support portal)
+- Integrate with business processes (ticketing, CRM, approvals, handoff to humans)
+- Patterns
+  - Copilot Studio: actions/flows and connectors (Power Platform)
+  - Pro-code: Graph/API calls and custom tools
+  - [Integrate, manage, and operate AI agents](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ai-agents/integrate-manage-operate)
+
+### 4.5 Multi-channel deployment
+- Microsoft 365 Copilot, Teams, web/mobile, and other channels “of your choice” (implementation-dependent)
+- [Agents SDK overview](https://learn.microsoft.com/en-us/microsoft-365/agents-sdk/agents-sdk-overview)
+
 ## 5. Run (Invoke & Execute)
 
 ### 5.1 Entry points (how users/systems call the agent)
@@ -223,9 +251,30 @@ const markdown = `
 - Platform dashboards (Agent 365, service monitoring)
 - Latency, success rate, quality metrics, cost signals
 
-### 6.2 Audit trails
+### 6.2 Analytics dashboards (where you look)
+- Copilot Studio analytics & conversation insights (platform-provided)
+- Custom runtimes: Azure Monitor / Application Insights
+  - [Application Insights overview](https://learn.microsoft.com/en-us/azure/azure-monitor/app/app-insights-overview)
+
+### 6.3 Audit trails
 - Identity/authentication activity appears in Entra logs
 - Resource access logs in Azure and Microsoft 365 services
+
+### 6.4 Key metrics (examples)
+- Usage volume (sessions/day), active users, retention
+- Task success / resolution rate, escalation/hand-off rate
+- User satisfaction signals (thumbs up/down, feedback prompts)
+- Latency/timeout rate, tool failure rate
+- Cost (token/API spend) and quota/rate-limit pressure
+
+### 6.5 Alerting & triage
+- Detect issues early (tool failures, expired credentials, regressions)
+- Flag unsafe outputs/policy violations (where supported) and route to owners
+- Create runbooks for incident response and rollback
+
+### 6.6 Feedback & iteration loop
+- Review feedback + transcripts/logs → identify gaps → update prompts/tools/knowledge → redeploy
+- Connects directly to: **8. Evolve**
 
 ## 7. Govern & Secure (Policies, Risk, Compliance)
 
@@ -273,6 +322,18 @@ const markdown = `
 - Expire entitlement/access packages (if used)
 - Decommission agent identities and optional agent users
   - [Governing agent identities (overview)](https://learn.microsoft.com/en-us/entra/id-governance/agent-id-governance-overview)
+
+### 9.3 Retirement triggers (common)
+- Low/zero usage over time (review for consolidation)
+- Function superseded (new agent/version replaces it)
+- Security/compliance issue requiring shutdown
+- “Shadow agent” discovery that needs to be governed or decommissioned
+
+### 9.4 Retirement checklist (beyond delete)
+- Unpublish/disable in all channels (Teams/M365 Copilot/web)
+- Revoke credentials and remove access paths (permissions, RBAC, secrets)
+- Archive logs/config where retention requires it
+- Update catalogs/registries so owners and status remain clear
 
 ## 10. Reference Catalog (Systems involved across lifecycle)
 
@@ -355,6 +416,9 @@ const markdown = `
   - Artifact location: Foundry-managed runtime and/or your Azure compute
   - Artifacts created (hosting)
     - Hosting resources (depends on pattern): container app / app service / functions / AKS, etc.
+- Release & rollout
+  - Pilot/Beta (limited audience) → full rollout
+  - Deployment checklist: identity/permissions, monitoring/alerting, governance gates
 - Run
   - Users invoke in Microsoft 365 Copilot / Teams; or your custom app calls the agent endpoint
 - Observe / govern
@@ -399,6 +463,8 @@ const markdown = `
   - Artifacts created (publishing)
     - Channel deployment config (Teams, M365 Copilot, web)
     - Environment policies (DLP / connectors governance) depending on tenant setup
+- Release & rollout
+  - Promote through environments (dev/test/prod) and pilot before broad rollout
 - Host
   - Copilot Studio managed hosting for conversational experience; external tools/services as configured
 - Run
@@ -435,6 +501,8 @@ const markdown = `
   - Artifacts created (publishing)
     - Teams/M365 app package
     - Tenant deployment approval/config (admin center controlled)
+- Release & rollout
+  - Pilot/Beta release → full release (channel-by-channel if needed)
 - Host
   - You host the runtime (Azure Container Apps/AKS/App Service/Functions patterns)
   - Artifacts created (hosting)
