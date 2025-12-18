@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Microsoft AI Agent Ecosystem Mindmap</title>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  }
+  #toolbar {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 10;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 10px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    border-radius: 10px;
+    backdrop-filter: blur(6px);
+  }
+  #toolbar button {
+    appearance: none;
+    border: 1px solid rgba(0, 0, 0, 0.18);
+    background: white;
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+  }
+  #toolbar button:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+  #toolbar .hint {
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.65);
+    margin-left: 6px;
+    white-space: nowrap;
+  }
+  #toolbar a {
+    color: inherit;
+  }
+  svg {
+    width: 100%;
+    height: 100%;
+  }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+<script src="https://cdn.jsdelivr.net/npm/markmap-view@0.15.4"></script>
+<script src="https://cdn.jsdelivr.net/npm/markmap-lib@0.15.4/dist/browser/index.min.js"></script>
+</head>
+<body>
+<div id="toolbar">
+  <button id="btnCollapse" type="button">Collapse all</button>
+  <button id="btnExpand" type="button">Expand all</button>
+  <button id="btnFit" type="button">Fit</button>
+  <span class="hint">Tip: click a node to fold/unfold • links open docs</span>
+</div>
+<svg id="mindmap"></svg>
+<script>
+const markdown = `
+# Microsoft AI Agent Ecosystem (Lifecycle-first)
+
+## 0. Read Me First (How to use this mindmap)
+- This map is organized by *agent lifecycle* (create → identity → register/publish → deploy → run → observe → govern → evolve → retire).
+- Click any node to fold/unfold. Doc links open in your browser.
+
+## 1. Create (Design & Build)
+
+### 1.1 Choose your build surface (where the “agent definition” lives)
+- Microsoft Foundry (formerly Azure AI Foundry)
+  - Build/test agents (prompt-based, workflow, hosted)
+  - [Agent development lifecycle (Foundry)](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/concepts/development-lifecycle?view=foundry)
+  - [Agent identity concepts in Foundry](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/concepts/agent-identity?view=foundry)
+- Microsoft Copilot Studio
+  - Low-code agent authoring and channel publishing
+  - Entra Agent ID integration (preview)
+  - [Copilot Studio: automatically create Entra agent identities](https://learn.microsoft.com/en-us/microsoft-copilot-studio/admin-use-entra-agent-identities)
+- Microsoft 365 Agents SDK
+  - Pro-code custom engine agents deployable to Microsoft 365 Copilot & Teams
+  - [Create and deploy with Microsoft 365 Agents SDK](https://learn.microsoft.com/en-us/microsoft-365-copilot/extensibility/create-deploy-agents-sdk)
+
+### 1.2 Define capabilities (what the agent can do)
+- Instructions / policies / guardrails (agent behavior)
+- Tools (actions)
+  - APIs, function tools, workflows
+  - MCP tools and servers
+    - [Agent 365 developer tooling (MCP)](https://learn.microsoft.com/en-us/microsoft-agent-365/developer/tooling)
+- Knowledge / grounding
+  - Files, indexes, retrieval systems (e.g., search)
+  - SharePoint Embedded grounding scenarios
+    - [SharePoint Embedded declarative agent](https://learn.microsoft.com/en-us/sharepoint/dev/embedded/development/declarative-agent/spe-da)
+- Orchestration
+  - Single agent vs multi-agent workflow
+  - Semantic Kernel agent patterns
+    - [Semantic Kernel agent architecture](https://learn.microsoft.com/en-us/semantic-kernel/frameworks/agent/agent-architecture)
+
+## 2. Provision Identity (Who the agent is)
+
+### 2.1 Microsoft Entra Agent ID (core identity model)
+- Overview
+  - [Agent identities, service principals, and applications](https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/agent-service-principals)
+  - [Key concepts (Agent ID)](https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/key-concepts)
+
+#### 2.1.1 Core constructs (objects you’ll see in Entra)
+- Agent Identity Blueprint
+  - Template/parent for agent identities
+  - [Key concepts: blueprints](https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/key-concepts#core-identity-concepts)
+- Agent Identity Blueprint Principal
+  - Service principal created when blueprint is instantiated in tenant
+  - Enables app-only Graph operations to create/manage agent identities
+  - [Blueprint principal (service principals)](https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/agent-service-principals)
+- Agent Identity (agent subtype service principal)
+  - Primary account for agent auth (Object ID = App ID)
+  - [Key concepts: agent identity](https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/key-concepts#core-identity-concepts)
+- Agent User (optional)
+  - User-object representation for systems requiring user identities (\`idtyp=user\`)
+  - 1:1 mapping with an Agent Identity
+  - [Agent users](https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/agent-users)
+
+#### 2.1.2 Authentication patterns (how it acts)
+- Interactive agent pattern (delegated permissions)
+  - Acts on behalf of a signed-in user
+  - [Interactive vs autonomous patterns](https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/key-concepts#agent-operation-patterns)
+- Autonomous agent pattern (agent/app-only permissions)
+  - Acts using its own identity
+  - [Interactive vs autonomous patterns](https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/key-concepts#agent-operation-patterns)
+
+#### 2.1.3 Token exchange & impersonation (how tokens happen)
+- Hosting platform issues an access token → Entra token operations
+- Blueprint principal performs Graph calls (app-only) to create/manage identities
+- Federated Identity Credential (FIC) relationships enable impersonation model
+  - [Agent SP model + FIC relationships](https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/agent-service-principals)
+
+#### 2.1.4 Permission model (what it can access)
+- Assign permissions directly to agent identities
+  - [Agent identities can be granted permissions directly](https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/agent-service-principals)
+- Azure RBAC role assignments (Azure resources)
+  - [Azure RBAC overview](https://learn.microsoft.com/en-us/azure/role-based-access-control/overview)
+
+#### 2.1.5 Administration (who’s accountable)
+- Owners (technical)
+- Sponsors (business accountability)
+- Managers (agent user manager)
+  - [Owners, sponsors, managers](https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/key-concepts#agent-owners-sponsors-and-managers)
+
+### 2.2 Foundry identity provisioning specifics (what changes as you publish)
+- Shared project identity (unpublished / in-development agents in a project)
+- Distinct agent identity (published agent)
+  - [Foundry integration: shared vs distinct identities](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/concepts/agent-identity?view=foundry#foundry-integration)
+
+### 2.3 Entra SDK for Agent ID (optional runtime component)
+- Companion container to offload identity/token work
+  - [Entra SDK for Agent ID](https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/key-concepts#microsoft-entra-sdk-for-agent-id)
+
+## 3. Register & Publish (Make it discoverable)
+
+### 3.1 Register in control plane / registry
+- Microsoft Agent 365 (control plane)
+  - Registry, lifecycle management, policy enforcement (and MCP tooling)
+  - [Microsoft Agent 365](https://www.microsoft.com/en-us/microsoft-agent-365)
+  - [Agent 365 developer tooling](https://learn.microsoft.com/en-us/microsoft-agent-365/developer/tooling)
+- Agent registry (concept)
+  - Central metadata for discovery
+  - [Agent registry (key concepts entry point)](https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/key-concepts)
+
+### 3.2 Publish to Microsoft 365 surfaces (optional)
+- Publish Foundry agent to Teams + Microsoft 365 Copilot
+  - Automatically provisions Azure Bot Service + Entra app for packaging
+  - [Publish agents to Microsoft 365 Copilot and Teams](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/publish-copilot?view=foundry)
+- Copilot Studio publishing
+  - Channel publishing and admin governance through Power Platform
+
+## 4. Deploy & Host (Where it runs)
+
+### 4.1 Managed hosting vs self-hosted
+- Foundry hosted runtimes (hosted agents)
+  - [Development lifecycle (Foundry)](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/concepts/development-lifecycle?view=foundry)
+- Azure hosting targets (common patterns)
+  - Azure Container Apps
+  - Azure Kubernetes Service (AKS)
+  - Azure Functions
+  - Azure App Service
+
+### 4.2 Tool hosting (MCP servers / APIs)
+- MCP servers run somewhere (your infra or partner infra)
+- Agent 365 tooling helps configure and register tool manifests
+  - [Agent 365 developer tooling (MCP)](https://learn.microsoft.com/en-us/microsoft-agent-365/developer/tooling)
+
+## 5. Run (Invoke & Execute)
+
+### 5.1 Entry points (how users/systems call the agent)
+- Microsoft 365 Copilot
+- Microsoft Teams
+- Custom apps (web/mobile/backends)
+- Automation (scheduled/event-driven)
+
+### 5.2 Execution modes
+- Interactive execution
+  - User is signed-in; agent acts with delegated permissions
+  - [Interactive vs autonomous patterns](https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/key-concepts#agent-operation-patterns)
+- Autonomous execution
+  - Agent acts with its own identity
+  - [Interactive vs autonomous patterns](https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/key-concepts#agent-operation-patterns)
+
+### 5.3 Typical runtime sequence (canonical)
+- Prompt/request received → orchestration decides → tools invoked → data retrieved → response generated
+- Authentication gates every tool/data call
+  - [Agent service principal model](https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/agent-service-principals)
+
+## 6. Observe (Telemetry, Quality, Performance)
+
+### 6.1 Operational observability
+- Platform dashboards (Agent 365, service monitoring)
+- Latency, success rate, quality metrics, cost signals
+
+### 6.2 Audit trails
+- Identity/authentication activity appears in Entra logs
+- Resource access logs in Azure and Microsoft 365 services
+
+## 7. Govern & Secure (Policies, Risk, Compliance)
+
+### 7.1 Identity governance (Entra)
+- Lifecycle controls (time-bound access, sponsors, reviews)
+  - [Governing agent identities (overview)](https://learn.microsoft.com/en-us/entra/id-governance/agent-id-governance-overview)
+
+### 7.2 Security operations
+- Microsoft Security Copilot agents ecosystem
+  - [Security Copilot agents overview](https://learn.microsoft.com/en-us/copilot/security/agents-overview)
+- Defender / Sentinel integrations (threat detection + incident response)
+
+### 7.3 Data governance & compliance
+- Microsoft Purview (DLP, labels, audit, DSPM)
+
+### 7.4 Network controls (where applicable)
+- Conditional Access / risk-based decisions
+- Network-level controls (Global Secure Access concepts for agents)
+  - [Security for AI agents with Entra Agent ID](https://learn.microsoft.com/en-us/entra/agent-id/identity-professional/security-for-ai#microsoft-entra-agent-id)
+
+## 8. Evolve (Version, Improve, Expand)
+
+### 8.1 Iterate on behavior
+- Update instructions/tools/knowledge sources
+- A/B test in playgrounds / staged environments
+
+### 8.2 Expand integrations
+- Add MCP tools, new connectors, new data sources
+- Add additional channels (Teams, M365 Copilot, custom apps)
+
+### 8.3 Migrate platforms (when needed)
+- Power Virtual Agents → Copilot Studio
+- Azure AI Studio → Azure AI Foundry → Microsoft Foundry
+- Bot Framework SDK → Microsoft 365 Agents SDK
+- Semantic Kernel + multi-agent patterns → Agent Framework convergence
+
+## 9. Retire (Decommission & Cleanup)
+
+### 9.1 Decommission surfaces
+- Remove from Agent stores/registries
+- Remove Teams/Copilot packages where published
+
+### 9.2 Remove access and identities
+- Remove permissions / RBAC assignments
+- Expire entitlement/access packages (if used)
+- Decommission agent identities and optional agent users
+  - [Governing agent identities (overview)](https://learn.microsoft.com/en-us/entra/id-governance/agent-id-governance-overview)
+
+## 10. Reference Catalog (Systems involved across lifecycle)
+
+### 10.1 Identity
+- Microsoft Entra Agent ID
+  - [Key concepts](https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/key-concepts)
+
+### 10.2 Control plane / registry
+- Microsoft Agent 365
+  - [Agent 365](https://www.microsoft.com/en-us/microsoft-agent-365)
+
+### 10.3 Build platforms
+- Microsoft Foundry
+  - [Foundry agent identity](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/concepts/agent-identity?view=foundry)
+- Copilot Studio
+  - [Copilot Studio Entra identities](https://learn.microsoft.com/en-us/microsoft-copilot-studio/admin-use-entra-agent-identities)
+- Microsoft 365 Agents SDK
+  - [Agents SDK](https://learn.microsoft.com/en-us/microsoft-365-copilot/extensibility/create-deploy-agents-sdk)
+
+### 10.4 Orchestration
+- Semantic Kernel agent patterns
+  - [Agent architecture](https://learn.microsoft.com/en-us/semantic-kernel/frameworks/agent/agent-architecture)
+- MCP
+  - [Agent 365 tooling](https://learn.microsoft.com/en-us/microsoft-agent-365/developer/tooling)
+
+### 10.5 Microsoft 365 surfaces
+- Microsoft 365 Copilot (agents)
+  - [Agents for Microsoft 365 Copilot](https://learn.microsoft.com/en-us/microsoft-365-copilot/extensibility/agents-overview)
+- Microsoft Teams
+
+### 10.6 Security & compliance
+- Microsoft Security Copilot (agents)
+  - [Security Copilot agents overview](https://learn.microsoft.com/en-us/copilot/security/agents-overview)
+- Microsoft Purview
+- Microsoft Defender
+
+## 11. Lifecycle Swimlanes (platform paths)
+
+### 11.1 Foundry path (pro-code + managed agent service)
+- Create
+  - Define agent in Foundry portal/SDK (prompt-based / workflow / hosted)
+  - Artifact location: Foundry project + agent definitions/versions
+  - [Foundry agent lifecycle](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/concepts/development-lifecycle?view=foundry)
+  - Artifacts created (typical)
+    - Foundry project
+    - Agent definition + versions (draft/immutable versions)
+    - Tool attachments (actions / MCP tools)
+    - Knowledge attachments (files/indexes)
+- Identity
+  - Default: shared project identity for in-development agents
+  - Publish: distinct agent identity for the published agent
+  - Artifact location: Microsoft Entra Agent ID objects (blueprint/identity) tied to project/agent app
+  - [Foundry agent identity: shared vs distinct](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/concepts/agent-identity?view=foundry#foundry-integration)
+  - Artifacts created (identity objects)
+    - Agent identity blueprint (template)
+    - Blueprint principal (service principal that can create/manage agent identities)
+    - Agent identity (agent subtype service principal)
+    - Optional: agent user (only if required by downstream systems)
+    - Reference docs
+      - [Agent service principals (Agent ID)](https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/agent-service-principals)
+      - [Agent ID key concepts](https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/key-concepts)
+  - Where to see it
+    - Entra admin center → Enterprise applications → filter Application type = Agent ID (Preview)
+      - [Discover agents with Entra Agent ID (filter Enterprise Applications)](https://learn.microsoft.com/en-us/security/security-for-ai/discover#step-1%E2%80%94gain-visibility-into-agents-with-entra-agent-id-preview)
+    - Foundry resource JSON view shows identity references (project-level for shared; agent app-level for distinct)
+      - [Foundry agent identity (portal JSON view guidance)](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/concepts/agent-identity?view=foundry)
+- Register / publish
+  - Publish to Microsoft 365 Copilot + Teams (package + Azure Bot Service + Entra app)
+  - Publish to Agent 365 (control plane)
+  - Artifact location: Teams/M365 publishing package; Agent 365 registry entry
+  - [Publish to Copilot & Teams](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/publish-copilot?view=foundry)
+  - [Publish to Agent 365](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/how-to/agent-365?view=foundry)
+  - Artifacts created (publishing)
+    - Agent application (stable endpoint + deployment package)
+    - Azure Bot Service resource (for Teams/M365 Copilot channel)
+    - Teams / Microsoft 365 app package metadata
+    - Agent 365 registry entry (when publishing/connecting)
+- Host
+  - Foundry hosted runtime (hosted agents) or connected Azure hosting
+  - Artifact location: Foundry-managed runtime and/or your Azure compute
+  - Artifacts created (hosting)
+    - Hosting resources (depends on pattern): container app / app service / functions / AKS, etc.
+- Run
+  - Users invoke in Microsoft 365 Copilot / Teams; or your custom app calls the agent endpoint
+- Observe / govern
+  - Artifact location: Entra sign-in logs + Azure/M365 logs; policies in Entra/Purview/Security tools
+  - Visibility
+    - Entra sign-ins / audit logs (tokens issued to agent identities)
+    - Purview / Defender / Security tooling visibility (policy-dependent)
+- Retire
+  - Remove publishing package/registry entries; remove permissions; decommission agent identity
+  - Artifacts removed/updated (retirement checklist)
+    - Remove agent from Teams/M365 catalog / stores
+    - Remove Agent 365 registry entry (if applicable)
+    - Remove RBAC + app permissions; disable/decommission agent identities
+    - Remove secrets/credentials if any exist (prefer FIC-managed auth patterns)
+
+### 11.2 Copilot Studio path (low-code)
+- Create
+  - Define agent in Copilot Studio
+  - Artifact location: Power Platform environment (solution/agent configuration)
+  - Artifacts created (typical)
+    - Copilot Studio agent configuration
+    - Power Platform solution components (if packaged)
+    - Connections (connectors), actions/flows (if used)
+- Identity
+  - If Entra Agent ID integration is enabled: Copilot Studio automatically assigns an agent identity
+  - Artifact location: Entra agent identities (and governance visibility)
+  - [Copilot Studio: Entra agent identities (preview)](https://learn.microsoft.com/en-us/microsoft-copilot-studio/admin-use-entra-agent-identities)
+  - Artifacts created (identity objects)
+    - Microsoft Copilot Studio agent identity blueprint (tenant-level)
+    - Blueprint principal (needed to create identities and agent users)
+    - Agent identity per agent (or per environment behavior depending on configuration)
+    - Reference
+      - [Copilot Studio agent identities (preview)](https://learn.microsoft.com/en-us/microsoft-copilot-studio/admin-use-entra-agent-identities)
+      - [Agent service principals (Agent ID)](https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/agent-service-principals)
+  - Where to see it
+    - Power Platform admin center (environment-level setting governs identity behavior)
+    - Entra admin center → Enterprise applications (Agent ID filter)
+- Register / publish
+  - Publish to supported channels (Microsoft 365 Copilot / Teams / web)
+  - Artifact location: channel configuration + admin policies in Power Platform/M365
+  - [Custom engine agents overview (Copilot Studio path)](https://learn.microsoft.com/en-us/microsoft-365-copilot/extensibility/overview-custom-engine-agent)
+  - Artifacts created (publishing)
+    - Channel deployment config (Teams, M365 Copilot, web)
+    - Environment policies (DLP / connectors governance) depending on tenant setup
+- Host
+  - Copilot Studio managed hosting for conversational experience; external tools/services as configured
+- Run
+  - Users invoke via Copilot/Teams/web depending on publishing choice
+- Observe / govern
+  - Artifact location: Power Platform + Entra + Purview/Security tooling
+  - Visibility: Entra admin center can show agent identities; Entra sign-in/audit activity
+- Retire
+  - Remove agent from environments/channels; remove/expire permissions and agent identities
+  - Artifacts removed/updated (retirement checklist)
+    - Remove channel deployments
+    - Remove/expire environment connections and permissions
+    - Disable/decommission agent identities if no longer needed
+
+### 11.3 Microsoft 365 Agents SDK path (custom engine agent runtime)
+- Create
+  - Build agent using the Agents SDK (C#/JS/Python) + your orchestration/model stack
+  - Artifact location: your code repo + app hosting environment
+  - [Create and deploy an agent with Microsoft 365 Agents SDK](https://learn.microsoft.com/en-us/microsoft-365-copilot/extensibility/create-deploy-agents-sdk)
+  - Artifacts created (typical)
+    - Source code (agent runtime)
+    - Configuration (env vars, secrets, endpoints)
+    - Telemetry/observability config (App Insights, logs)
+- Identity
+  - Configure Entra identity for the deployed agent (app/agent identity depending on pattern)
+  - Artifact location: Entra tenant objects + app registration configuration
+  - Artifacts created (identity objects)
+    - Entra app registration and/or agent identity
+    - Permissions (Graph delegated/app perms, Azure RBAC)
+    - Optional: agent user (rare; only when a user object is required)
+- Register / publish
+  - Package/deploy to Microsoft 365 Copilot and/or Teams
+  - Artifact location: Teams/M365 app package + tenant deployment configuration
+  - Artifacts created (publishing)
+    - Teams/M365 app package
+    - Tenant deployment approval/config (admin center controlled)
+- Host
+  - You host the runtime (Azure Container Apps/AKS/App Service/Functions patterns)
+  - Artifacts created (hosting)
+    - Your compute resources + networking
+    - Managed identity / workload identity binding (pattern-dependent)
+- Run
+  - Microsoft 365 Copilot/Teams communicates with your hosted agent runtime
+  - Conceptual model: custom engine agent anatomy
+    - [Agents for Microsoft 365 Copilot (custom engine agents)](https://learn.microsoft.com/en-us/microsoft-365-copilot/extensibility/agents-overview#custom-engine-agents)
+- Observe / govern
+  - Artifact location: your app telemetry + Entra audit/sign-ins + Purview/Security tooling
+- Retire
+  - Undeploy runtime + remove app packages + remove access/identities
+  - Artifacts removed/updated (retirement checklist)
+    - Undeploy compute + revoke access
+    - Remove app packages from catalogs
+    - Remove RBAC/app permissions and decommission identities
+`;
+
+const transformer = new markmap.Transformer();
+const { root, features } = transformer.transform(markdown);
+const { Markmap, loadCSS, loadJS } = markmap;
+
+if (features.styles) loadCSS(features.styles);
+if (features.scripts) loadJS(features.scripts, { getMarkmap: () => markmap });
+
+function getChildren(node) {
+  return node?.children || node?.c || [];
+}
+
+function walk(node, visit, depth = 0) {
+  visit(node, depth);
+  for (const child of getChildren(node)) {
+    walk(child, visit, depth + 1);
+  }
+}
+
+function setFoldAll(rootNode, fold, { keepRootExpanded = true } = {}) {
+  walk(rootNode, (node, depth) => {
+    if (keepRootExpanded && depth === 0) return;
+    node.payload = node.payload || {};
+    node.payload.fold = fold;
+  });
+}
+
+function setFoldByDepth(rootNode, maxExpandedDepth) {
+  walk(rootNode, (node, depth) => {
+    node.payload = node.payload || {};
+    node.payload.fold = depth > maxExpandedDepth ? 1 : 0;
+  });
+  rootNode.payload = rootNode.payload || {};
+  rootNode.payload.fold = 0;
+}
+
+// Default: keep top levels expanded so the map is readable on load.
+setFoldByDepth(root, 2);
+
+const mm = Markmap.create('#mindmap', null, root);
+mm.fit();
+
+document.getElementById('btnCollapse').addEventListener('click', () => {
+  setFoldAll(root, 1);
+  mm.setData(root);
+  mm.fit();
+});
+
+document.getElementById('btnExpand').addEventListener('click', () => {
+  setFoldAll(root, 0);
+  mm.setData(root);
+  mm.fit();
+});
+
+document.getElementById('btnFit').addEventListener('click', () => {
+  mm.fit();
+});
+</script>
+</body>
+</html>
