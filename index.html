@@ -110,11 +110,13 @@ const markdown = `
     - [SharePoint Embedded declarative agent](https://learn.microsoft.com/en-us/sharepoint/dev/embedded/development/declarative-agent/spe-da)
 - Orchestration
   - Single agent vs multi-agent workflow
-  - Semantic Kernel agent patterns
-    - Agent types: ChatCompletionAgent, OpenAIAssistantAgent, AzureAIAgent, OpenAIResponsesAgent, CopilotStudioAgent
-    - Orchestration patterns: Concurrent, Sequential, Handoff, Group Chat, Magentic
-    - ⚠️ AgentGroupChat deprecated → use GroupChatOrchestration
-    - [Semantic Kernel agent architecture](https://learn.microsoft.com/en-us/semantic-kernel/frameworks/agent/agent-architecture)
+  - Microsoft Agent Framework (successor to Semantic Kernel + AutoGen)
+    - Agents: AI entities with instructions, tools, sessions, context providers, middleware
+    - Workflows: graph-based orchestration with executors, edges, checkpointing
+    - Orchestration patterns: Sequential, Concurrent, Handoff, Group Chat, Magentic
+    - Tools: native functions, MCP servers, A2A integration
+    - [Agent Framework overview](https://learn.microsoft.com/en-us/agent-framework/overview/agent-framework-overview)
+    - [GitHub: microsoft/agent-framework](https://github.com/microsoft/agent-framework)
 
 ### 1.3 Validate & test (before rollout)
 - Functional testing of tools/workflows (happy path + failure modes)
@@ -340,7 +342,10 @@ const markdown = `
 - Power Virtual Agents → Copilot Studio
 - Azure AI Studio → Azure AI Foundry → Microsoft Foundry
 - Bot Framework SDK → Microsoft 365 Agents SDK
-- Semantic Kernel + multi-agent patterns → Agent Framework convergence
+- Semantic Kernel → Microsoft Agent Framework
+  - [Migration guide from Semantic Kernel](https://learn.microsoft.com/en-us/agent-framework/migration-guide/from-semantic-kernel/)
+- AutoGen → Microsoft Agent Framework
+  - [Migration guide from AutoGen](https://learn.microsoft.com/en-us/agent-framework/migration-guide/from-autogen/)
 
 ## 9. Retire (Decommission & Cleanup)
 
@@ -385,14 +390,17 @@ const markdown = `
   - [Agents SDK](https://learn.microsoft.com/en-us/microsoft-365-copilot/extensibility/create-deploy-agents-sdk)
 
 ### 10.4 Orchestration
-- Semantic Kernel agent patterns
-  - Agent types: ChatCompletionAgent, OpenAIAssistantAgent, AzureAIAgent, OpenAIResponsesAgent, CopilotStudioAgent
-  - Orchestration: Concurrent, Sequential, Handoff, GroupChatOrchestration, Magentic
-  - [Agent architecture](https://learn.microsoft.com/en-us/semantic-kernel/frameworks/agent/agent-architecture)
+- Microsoft Agent Framework (successor to Semantic Kernel + AutoGen)
+  - Agents + Workflows architecture
+  - Orchestration patterns: Sequential, Concurrent, Handoff, Group Chat, Magentic
+  - Tools: native functions, MCP, A2A (Agent-to-Agent)
+  - Sessions, context providers, middleware, checkpointing
+  - [Agent Framework overview](https://learn.microsoft.com/en-us/agent-framework/overview/agent-framework-overview)
+  - [GitHub: microsoft/agent-framework](https://github.com/microsoft/agent-framework)
 - MCP / Agent 365 Tooling
   - \`a365\` CLI for MCP server management
   - ToolingManifest.json configuration
-  - Orchestrator extensions (Agent Framework, Azure AI Foundry, OpenAI, Semantic Kernel)
+  - Orchestrator extensions (Agent Framework, Azure AI Foundry, OpenAI)
   - [Agent 365 tooling](https://learn.microsoft.com/en-us/microsoft-agent-365/developer/tooling)
 
 ### 10.5 Microsoft 365 surfaces
