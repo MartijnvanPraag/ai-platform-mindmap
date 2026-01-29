@@ -87,7 +87,12 @@ const markdown = `
   - [Copilot Studio: automatically create Entra agent identities](https://learn.microsoft.com/en-us/microsoft-copilot-studio/admin-use-entra-agent-identities)
 - Microsoft 365 Agents SDK
   - Pro-code custom engine agents deployable to Microsoft 365 Copilot & Teams
+  - Microsoft 365 Agents Toolkit (VS / VS Code templates)
   - [Create and deploy with Microsoft 365 Agents SDK](https://learn.microsoft.com/en-us/microsoft-365-copilot/extensibility/create-deploy-agents-sdk)
+- Microsoft Agent 365 (platform + CLI)
+  - Agent 365 CLI (\`a365\`) for tooling, registration, and lifecycle management
+  - MCP server catalog and ToolingManifest.json configuration
+  - [Agent 365 developer tooling](https://learn.microsoft.com/en-us/microsoft-agent-365/developer/tooling)
 
 ### 1.2 Define capabilities (what the agent can do)
 - Instructions / policies / guardrails (agent behavior)
@@ -95,6 +100,10 @@ const markdown = `
   - APIs, function tools, workflows
   - MCP tools and servers
     - [Agent 365 developer tooling (MCP)](https://learn.microsoft.com/en-us/microsoft-agent-365/developer/tooling)
+  - Tool authentication patterns
+    - MCP authentication (Model Context Protocol)
+    - A2A authentication (Agent-to-Agent)
+    - [Foundry tool authentication](https://learn.microsoft.com/en-us/azure/ai-foundry/agents/concepts/agent-identity?view=foundry)
 - Knowledge / grounding
   - Files, indexes, retrieval systems (e.g., search)
   - SharePoint Embedded grounding scenarios
@@ -102,6 +111,9 @@ const markdown = `
 - Orchestration
   - Single agent vs multi-agent workflow
   - Semantic Kernel agent patterns
+    - Agent types: ChatCompletionAgent, OpenAIAssistantAgent, AzureAIAgent, OpenAIResponsesAgent, CopilotStudioAgent
+    - Orchestration patterns: Concurrent, Sequential, Handoff, Group Chat, Magentic
+    - ⚠️ AgentGroupChat deprecated → use GroupChatOrchestration
     - [Semantic Kernel agent architecture](https://learn.microsoft.com/en-us/semantic-kernel/frameworks/agent/agent-architecture)
 
 ### 1.3 Validate & test (before rollout)
@@ -281,10 +293,29 @@ const markdown = `
 ### 7.1 Identity governance (Entra)
 - Lifecycle controls (time-bound access, sponsors, reviews)
   - [Governing agent identities (overview)](https://learn.microsoft.com/en-us/entra/id-governance/agent-id-governance-overview)
+- Sponsor administration
+  - Auto-transfer sponsorship to manager when sponsor leaves
+  - [Agent identity sponsor tasks](https://learn.microsoft.com/en-us/entra/id-governance/agent-sponsor-tasks)
+- Access packages for agent identities
+  - Assign security group memberships, app roles, API permissions, Entra roles
+  - Agent can self-request; sponsor can request on behalf
+  - [Assigning access to agent identities](https://learn.microsoft.com/en-us/entra/id-governance/agent-id-governance-overview#assigning-access-to-agent-identities)
+- Management portals
+  - My Account portal (sponsors/owners manage lifecycle)
+  - My Access portal (request access packages)
+  - [Manage agents in Microsoft Entra ID](https://learn.microsoft.com/en-us/entra/agent-id/identity-platform/manage-agent)
 
 ### 7.2 Security operations
 - Microsoft Security Copilot agents ecosystem
+  - Access Review Agent (Entra)
+  - Conditional Access Optimization Agent (Entra)
+  - Phishing Triage Agent (Defender)
+  - Threat Intelligence Briefing Agent (Security Copilot)
+  - Vulnerability Remediation Agent (Intune)
+  - DLP / IRM Alert Triage Agents (Purview)
   - [Security Copilot agents overview](https://learn.microsoft.com/en-us/copilot/security/agents-overview)
+- Security Store (discover Microsoft + partner agents)
+  - [Security Store](https://securitystore.microsoft.com/)
 - Defender / Sentinel integrations (threat detection + incident response)
 
 ### 7.3 Data governance & compliance
@@ -355,8 +386,13 @@ const markdown = `
 
 ### 10.4 Orchestration
 - Semantic Kernel agent patterns
+  - Agent types: ChatCompletionAgent, OpenAIAssistantAgent, AzureAIAgent, OpenAIResponsesAgent, CopilotStudioAgent
+  - Orchestration: Concurrent, Sequential, Handoff, GroupChatOrchestration, Magentic
   - [Agent architecture](https://learn.microsoft.com/en-us/semantic-kernel/frameworks/agent/agent-architecture)
-- MCP
+- MCP / Agent 365 Tooling
+  - \`a365\` CLI for MCP server management
+  - ToolingManifest.json configuration
+  - Orchestrator extensions (Agent Framework, Azure AI Foundry, OpenAI, Semantic Kernel)
   - [Agent 365 tooling](https://learn.microsoft.com/en-us/microsoft-agent-365/developer/tooling)
 
 ### 10.5 Microsoft 365 surfaces
@@ -366,9 +402,11 @@ const markdown = `
 
 ### 10.6 Security & compliance
 - Microsoft Security Copilot (agents)
+  - Microsoft agents: Access Review, Conditional Access Optimization, Phishing Triage, Threat Intelligence Briefing, Vulnerability Remediation, DLP/IRM Triage
+  - Partner agents via Security Store
   - [Security Copilot agents overview](https://learn.microsoft.com/en-us/copilot/security/agents-overview)
-- Microsoft Purview
-- Microsoft Defender
+- Microsoft Purview (DLP, IRM, labels, audit)
+- Microsoft Defender (threat detection, XDR)
 
 ## 11. Lifecycle Swimlanes (platform paths)
 
