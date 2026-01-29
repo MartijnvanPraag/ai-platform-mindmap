@@ -603,8 +603,8 @@ function setFoldByDepth(rootNode, maxExpandedDepth) {
   rootNode.payload.fold = 0;
 }
 
-// Default: keep top levels expanded so the map is readable on load.
-setFoldByDepth(root, 2);
+// Default: start collapsed for a cleaner initial view.
+setFoldAll(root, 1);
 
 const mm = Markmap.create('#mindmap', null, root);
 mm.fit();
